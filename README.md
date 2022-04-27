@@ -1,4 +1,4 @@
-# :bookmark_tabs: py-menu
+# :bookmark_tabs: zpp_menu
 # Informations
 Générateur d'un menu à touches fléchées.<br>
 Le choix dans le menu se fait à partir des touches fléchées pour la navigation et de la touche Enter pour la validation.<br>

@@ -8,9 +8,14 @@ Retourne l'indice du choix sélectionné
 - Python 3
 <br>
 
+# Installation
+```console
+pip install zpp_menu
+```
+
 # Utilisation
 ```python
-choice = menu.Menu(Title, OptionList)
+choice = zpp_menu.Menu(Title, OptionList)
 ```
 >En paramètre supplémentaire, nous pouvons mettre:<br/>
 >- Background = Choisir la couleur de font du choix selectionné

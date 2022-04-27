@@ -1,5 +1,5 @@
 ####################################################################
-#/ Nom du projet: py-menu                                         /#
+#/ Nom du projet: py-zpp_menu                                     /#
 #/ Nom du fichier: menu.py                                        /#
 #/ Type de fichier: fichier principal                             /#
 #/ Fichier annexe:                                                /#

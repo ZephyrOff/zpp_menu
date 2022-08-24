@@ -59,12 +59,10 @@ class ColorClass(object):
         self.mode = {"bold": "1",1: "1","dim": "2",2: "2","italic": "3",3: "3","underlined": "4",4: "4","blink": "5",5: "5","reverse": "7",7: "7","hidden": "8",8: "8","strikethrough": "9",9: "9","reset": "0",0: "0","res_bold": "21",21: "21","res_dim": "22",22: "22","res_underlined": "24",24: "24","res_blink": "25",25: "25","res_reverse": "27",27: "27","res_hidden": "28",28: "28"}
 
     def terminal_mode(self):
-        from ctypes import windll, c_int, byref
-        stdout_handle = windll.kernel32.GetStdHandle(c_int(-11))
-        mode = c_int(0)
-        windll.kernel32.GetConsoleMode(c_int(stdout_handle), byref(mode))
-        mode = c_int(mode.value | 4)
-        windll.kernel32.SetConsoleMode(c_int(stdout_handle), mode)
+        import ctypes
+
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
     def attribute(self):
         if self.idc=='None' or self.idc==None:

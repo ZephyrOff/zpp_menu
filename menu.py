@@ -5,9 +5,9 @@
 #/ Fichier annexe:                                                /#
 #/                                                                /#
 #/ Auteur: ZephyrOff  (Alexandre Pajak)                           /#
-#/ Version: 1.0                                                   /#
+#/ Version: 1.1                                                   /#
 #/ Description: Générateur de menu à touches fléchées             /#
-#/ Date: 27/04/2022                                               /#
+#/ Date: 24/08/2022                                               /#
 ####################################################################
 
 import os

@@ -22,6 +22,7 @@ choice = zpp_menu.Menu(Title, OptionList)
 >- Foreground = Choisir la couleur du texte du choix selectionné
 >- Pointer = Choisir un pointeur à afficher avant le choix
 >- Padding = Choisir la taille du décalage entre le titre et les choix
+>- Selected = Choisir la position du curseur
 
 # Exemple
 ![Exemple_menu](Asset/example.png)

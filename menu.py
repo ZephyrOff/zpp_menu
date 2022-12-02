@@ -5,9 +5,9 @@
 #/ Fichier annexe:                                                /#
 #/                                                                /#
 #/ Auteur: ZephyrOff  (Alexandre Pajak)                           /#
-#/ Version: 1.1.1                                                 /#
+#/ Version: 1.2                                                   /#
 #/ Description: Générateur de menu à touches fléchées             /#
-#/ Date: 24/08/2022                                               /#
+#/ Date: 02/12/2022                                               /#
 ####################################################################
 
 import os
@@ -158,7 +158,7 @@ class MenuClass():
     def show(self):
             print(self.Title)
             for i,element in enumerate(self.Options):
-                if i==0:
+                if i==self.Selected:
                     print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+element+attr(0))
                 else:
                     print(" "*(self.edgeY+len(self.pointer)) + element)
@@ -198,5 +198,11 @@ class MenuClass():
         print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.Options[self.Selected]+attr(0))
         cursorRestore()
 
-def Menu(Title, Options, Background="", Foreground="yellow", Pointer="", Padding=2):
-    return MenuClass(Title, Options, Background, Foreground, Pointer, Padding).show()
+def Menu(Title, Options, Background="", Foreground="yellow", Pointer="", Padding=2, Selected=None):
+    if Selected==None:
+        return MenuClass(Title, Options, Background, Foreground, Pointer, Padding).show()
+    else:
+        mc = MenuClass(Title, Options, Background, Foreground, Pointer, Padding)
+        if isinstance(Selected, int) and Selected<len(Options):
+            mc.Selected = Selected
+        return mc.show()

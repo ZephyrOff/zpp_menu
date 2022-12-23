@@ -5,9 +5,9 @@
 #/ Fichier annexe:                                                /#
 #/                                                                /#
 #/ Auteur: ZephyrOff  (Alexandre Pajak)                           /#
-#/ Version: 1.2                                                   /#
+#/ Version: 1.2.2                                                 /#
 #/ Description: Générateur de menu à touches fléchées             /#
-#/ Date: 02/12/2022                                               /#
+#/ Date: 23/12/2022                                               /#
 ####################################################################
 
 import os
@@ -147,6 +147,8 @@ class MenuClass():
             self.Title = Title
             self.Options = Options
 
+            self.column, line = os.get_terminal_size()
+
             cursorHide()
 
             self.edgeY = Padding
@@ -155,13 +157,20 @@ class MenuClass():
     def __del__(self):
         cursorShow()
 
+    def get_output(self, line):
+        marging = self.column - len(" "*self.edgeY + self.pointer)
+        if len(line)>marging:
+            return line[:marging]
+        else:
+            return line
+
     def show(self):
             print(self.Title)
             for i,element in enumerate(self.Options):
                 if i==self.Selected:
-                    print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+element+attr(0))
+                    print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.get_output(element)+attr(0))
                 else:
-                    print(" "*(self.edgeY+len(self.pointer)) + element)
+                    print(" "*(self.edgeY+len(self.pointer)) + self.get_output(element))
 
             while True:
                 k = getkey()
@@ -190,12 +199,12 @@ class MenuClass():
         cursorSave()
         EraseLine()
         cursorUp((self.MenuMax-self.Selected)+1)
-        print(" "*(self.edgeY+len(self.pointer)) + self.Options[self.Selected],end="")
+        print(" "*(self.edgeY+len(self.pointer)) + self.get_output(self.Options[self.Selected]),end="")
 
     def Rewrite_Selected(self):
         EraseLine()
         cursorReset()
-        print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.Options[self.Selected]+attr(0))
+        print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.get_output(self.Options[self.Selected])+attr(0))
         cursorRestore()
 
 def Menu(Title, Options, Background="", Foreground="yellow", Pointer="", Padding=2, Selected=None):

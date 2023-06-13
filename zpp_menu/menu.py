@@ -1,16 +1,6 @@
-####################################################################
-#/ Nom du projet: py-zpp_menu                                     /#
-#/ Nom du fichier: menu.py                                        /#
-#/ Type de fichier: fichier principal                             /#
-#/ Fichier annexe:                                                /#
-#/                                                                /#
-#/ Auteur: ZephyrOff  (Alexandre Pajak)                           /#
-#/ Version: 1.2.2                                                 /#
-#/ Description: Générateur de menu à touches fléchées             /#
-#/ Date: 23/12/2022                                               /#
-####################################################################
 
 import os
+from glob import glob
 
 if os.name=="nt":
     from msvcrt import getch,kbhit
@@ -110,14 +100,8 @@ def bg(color):
 def com(val):
     print("\033"+val,end="")
 
-def cursorUp(x=1):
-    com("["+str(x)+"A")
-
-def cursorDown(x=1):
-    com("["+str(x)+"B")
-
-def cursorReset():
-    com("[0G")
+def cursorTo(x=0):
+    com("["+str(x)+";0H")
 
 def cursorSave():
     com("7")
@@ -134,7 +118,14 @@ def cursorShow():
 def EraseLine():
     com("[2K")
 
-############################ MENU ###########################
+def clear():
+    cursorTo(0)
+    print("\033[2J",end="")
+
+def cursorReset():
+    com("[0G")
+
+############################ Menu ###########################
 class MenuClass():
     def __init__(self,Title, Options, Background, Foreground, Pointer, Padding):
         if isinstance(Options,list):
@@ -143,66 +134,126 @@ class MenuClass():
             self.Background = Background
             self.Foreground = Foreground
             self.Title = Title
+            self.title_size = len(Title.split("\n"))
             self.Options = Options
 
             self.column, line = os.get_terminal_size()
 
             cursorHide()
 
+            self.path = self.Title
+
             self.edgeY = Padding
             self.pointer = Pointer
 
+
     def __del__(self):
         cursorShow()
+        clear()
 
-    def get_output(self, line):
-        marging = self.column - len(" "*self.edgeY + self.pointer)
-        if len(line)>marging:
-            return line[:marging]
+    def print_index(self, before, element, foreground=None, background=None):
+        max = os.get_terminal_size().columns-len(before)
+        size = len(before) + len(element)
+
+        if size<max:
+            if foreground!=None:
+                print(before + fg(foreground)+bg(background)+element+attr(0))
+            else:
+                print(before + element)
         else:
-            return line
+            if foreground!=None:
+                print(before + fg(foreground)+bg(background)+element[0:max-1]+attr(0))
+            else:
+                print(before + element[0:max-1])   
+
 
     def show(self):
+            clear()
+            tmax = (os.get_terminal_size().lines)-self.title_size
             print(self.Title)
-            for i,element in enumerate(self.Options):
-                if i==self.Selected:
-                    print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.get_output(element)+attr(0))
-                else:
-                    print(" "*(self.edgeY+len(self.pointer)) + self.get_output(element))
 
+            cursorTo(self.title_size+1)
+
+            for i,element in enumerate(self.Options):
+                if i<tmax-1:
+                    size = len(" "*(self.edgeY+len(self.pointer)) + element)
+                    if i==self.Selected:
+                        self.print_index(" "*(self.edgeY+len(self.pointer)), element, self.Foreground, self.Background)
+                    else:
+                        self.print_index(" "*(self.edgeY+len(self.pointer)), element)
+            
+            if tmax<self.MenuMax:
+                self.size = tmax-2
+            else:
+                self.size = self.MenuMax
+
+            self.Selected = 0
+            self.cursor = 2
             while True:
                 k = getkey()
-                if k=="up":
+                if k=="up" and len(self.Options)>1:
                     self.Rewrite_line()
                     if self.Selected-1<0:
                         self.Selected=self.MenuMax
-                        cursorDown(self.MenuMax)
+                        self.cursor = self.size+2
+                        self.Rewrite_screen("bottom")
                     else:
                         self.Selected-=1
-                        cursorUp(1)
+                        if self.cursor==2 and self.Selected>=0:
+                            self.Rewrite_screen("up")
+                        else:
+                            self.cursor-=1
                     self.Rewrite_Selected()
-                elif k=="down":
+                elif k=="down" and len(self.Options)>1:
                     self.Rewrite_line()
                     if self.Selected+1>self.MenuMax:
                         self.Selected=0
-                        cursorUp(self.MenuMax)
+                        self.cursor=2
+                        self.Rewrite_screen("top")
                     else:
                         self.Selected+=1
-                        cursorDown(1)
+                        if self.cursor==self.size+2 and self.cursor<self.MenuMax and self.Selected<self.MenuMax+1:
+                            self.Rewrite_screen("down")
+                        else:
+                            self.cursor+=1
+                        cursorTo(self.cursor+self.title_size)
                     self.Rewrite_Selected()
                 elif k=="enter":
                     return self.Selected
+    
+    def Rewrite_screen(self,direction):
+        clear()
+        print(self.Title)
+        cursorTo(self.title_size+1)
+
+        if direction=="down":
+            list_f = self.Options[self.Selected-self.size:self.Selected+1]
+        elif direction=="up":
+            list_f = self.Options[self.Selected:self.Selected+self.size+1]
+        elif direction=="top":
+            list_f = self.Options[0:self.size+1]
+        elif direction=="bottom":
+            list_f = self.Options[self.Selected-self.size:self.Selected]
+
+        for i in list_f:
+            size = len(" "*(self.edgeY+len(self.pointer))+i)
+            if i==self.Options[self.Selected]:
+                self.print_index(" "*(self.edgeY+len(self.pointer)), i, self.Foreground, self.Background)
+            else:
+                self.print_index(" "*(self.edgeY+len(self.pointer)), i)
 
     def Rewrite_line(self):
         cursorSave()
+        cursorTo(self.title_size+self.cursor-1)
         EraseLine()
-        cursorUp((self.MenuMax-self.Selected)+1)
-        print(" "*(self.edgeY+len(self.pointer)) + self.get_output(self.Options[self.Selected]),end="")
+        size = len(" "*(self.edgeY+len(self.pointer)) + self.Options[self.Selected])
+        self.print_index(" "*(self.edgeY+len(self.pointer)), self.Options[self.Selected])
 
     def Rewrite_Selected(self):
+        cursorTo(self.title_size+self.cursor-1)
         EraseLine()
-        cursorReset()
-        print(" "*self.edgeY + self.pointer + fg(self.Foreground)+bg(self.Background)+self.get_output(self.Options[self.Selected])+attr(0))
+        size = len(" "*self.edgeY + self.pointer + self.Options[self.Selected])
+        self.print_index(" "*self.edgeY + self.pointer, self.Options[self.Selected], self.Foreground, self.Background)
         cursorRestore()
 
 def Menu(Title, Options, Background="", Foreground="yellow", Pointer="", Padding=2, Selected=None):

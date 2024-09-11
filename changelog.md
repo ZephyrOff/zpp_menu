@@ -4,3 +4,6 @@
 - Changement de l'affichage du titre pour prendre en compte les sauts de lignes
 - Vérifie la longueur des lignes pour pas dépasser et casser l'affichage
 - Prise en compte de menu dont la taille dépasse la taille de l'écran
+
+## [1.3.1] - 2024-09-11
+- Migrate repo

@@ -1,6 +1,6 @@
 [project]
 name = "zpp_menu"
-version = "1.3.0"
+version = "1.3.1"
 description = "Générateur d'un menu à touches fléchées"
 mainfile = "__init__.py"
 requires-python = ">=3.6"
@@ -18,8 +18,8 @@ changelog = "changelog.md"
 
 [project.urls]
 changelog = ""
-homepage = "https://github.com/ZephyrOff/py-zpp_menu"
-documentation = "https://github.com/ZephyrOff/py-zpp_menu"
+homepage = "https://github.com/ZephyrOff/zpp_menu"
+documentation = "https://github.com/ZephyrOff/zpp_menu"
 
 [project.dependencies]
 
